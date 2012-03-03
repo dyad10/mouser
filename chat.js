@@ -32,7 +32,7 @@
     client.send('Welcome to this socket.io mouse tracker!');
     client.send('Please provide your user name');
     return client.on('message', function(message) {
-      var feedback;
+      var feedback = [];
       if (!username) {
         username = message;
         client.send("welcome, " + username + "!");
@@ -43,20 +43,24 @@
 	client.send('roll: ' + clients.join(","));
         return;
       }
-      feedback = "" + username + ": " + message;
-
-      for(var i = 0; i < clients.length; i++) {
+      // send the positions and colors
+      for(var i=0; i< clients.length; i++) {
+	// update the x,y coordinate
         if(clients[i] == username) {
 	  var Regex = /(\d+),(\d+)/;
 	  var arr = Regex.exec(message)
 
 	  clients_xy[i] = {"x" : arr[1], "y" : arr[2]};
 	  console.log(clients_xy);
-	  break;
 	}
+
+	// prepare the message to send back
+	feedback.push('{"client" : "' + username + '", "color" : "' + clients_colors[i] + '", "position" : ' + JSON.stringify(clients_xy[i]) + '}');
+        feedback_string = "update: [" + feedback.join(",") + "]";
       }
-      client.send(feedback);
-      return client.broadcast.send(feedback);
+
+      client.send(feedback_string);
+      return client.broadcast.send(feedback_string);
     });
   });
 

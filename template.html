@@ -20,16 +20,15 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 	});
 	// handle incoming messages
 	socket.on('message', function(message) {
-	  console.log(message);
 	  var Regex = /(.+?):.+?:\s+(\d+),(\d+)/;
 	  var arr = Regex.exec(message);
 	  if(arr) {
-	    console.log('Received message: '+arr[2]+','+arr[3]);
 	    if(!context) {
 	      alert('no context!');
 	    }
 	    else {
-	      Circle(arr[2], arr[3], 1, arr[1], context);
+	      // Circle(arr[2], arr[3], 1, arr[1], context);
+	      // alert('why am i here?');
 	    }
 	  }
 	  Regex = /roll:\s(.+)$/;
@@ -40,7 +39,20 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 //	    USERS.list = eval('[' + arr.join(',') + ']');
 	    USERS.list = arr[0].split(",");
 	    console.log('roll ...');
-	    console.log(USERS.list);
+	  }
+
+	  Regex = /update:\s(\[.+\])/;
+	  arr = Regex.exec(message);
+	  if(arr) {
+	    var positions = $.parseJSON(arr[1]);
+	    context.clearRect(0, 0, 
+	      document.getElementById('imageView').width, 
+	      document.getElementById('imageView').height
+	    );
+	    for(var i = 0; i< positions.length; i++) {
+	      // draw the circles
+	      Circle(positions[i], context);
+	    }
 	  }
 	});
 
@@ -60,23 +72,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 	}
 	// add the mouse  move event listener
       	$('#imageView').mousemove(function(e) {
-	  console.log('[' + e.clientX + ', ' + e.clientY + ']');
 //	  Circle(e.clientX, e.clientY, 1, context);
 	  socket.send('Mouse position: '+e.clientX+','+e.clientY);
 	});
       });
 
-      function Circle(x,y,r, user, context) {
-      	this.x = x;
-	this.y = y;
+      function Circle(position, context) {
+      	this.x = position.position.x;
+	this.y = position.position.y;
 	this.r = 5;
-	context.clearRect(0, 0, document.getElementById('imageView').width, document.getElementById('imageView').height);
+	this.color = position.color;
 	context.beginPath();
-	context.fillStyle = USERS.get_color_for_user(user);
+	context.fillStyle = this.color;
 	context.arc(this.x, this.y, this.r, 0, Math.PI*2, true);
 	context.closePath();
 	context.fill();
-	USERS.update_user_position(user, {"x" : this.x, "y" : this.y});
+//	USERS.update_user_position(user, {"x" : this.x, "y" : this.y});
       }
 
       function get_name() {
@@ -100,7 +111,6 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 
 	get_color_for_user : function(user)  {
 	  var index = USERS.get_user_index(user);
-	  console.log('User index: ' +index);
 	  if(index != -1) {
 	    return USERS.colors[index];
 	  }
@@ -110,7 +120,6 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 	  var index = USERS.get_user_index(user);
 	  if(index != -1) {
 	    USERS.positions[index] = position;
-	    console.log(USERS.position);
 	    return true;
 	  }
 	}
