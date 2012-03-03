@@ -24,12 +24,13 @@
     return sys.pump(rs, response);
   });
 
-  io.configure(function () { 
+
+  socket = io.listen(server);
+
+  socket.configure(function () { 
     io.set("transports", ["xhr-polling"]); 
     io.set("polling duration", 10); 
   });
-
-  socket = io.listen(server);
 
   socket.sockets.on('connection', function(client) {
     var username;
