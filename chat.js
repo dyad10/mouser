@@ -27,11 +27,6 @@
 
   socket = io.listen(server);
 
-  socket.configure(function () { 
-    io.set("transports", ["xhr-polling"]); 
-    io.set("polling duration", 10); 
-  });
-
   socket.sockets.on('connection', function(client) {
     var username;
     username = null;
@@ -71,8 +66,6 @@
   });
 
 
-  var port = process.env.PORT || 8888;
-
-  server.listen(port);
+  server.listen(8888);
 
 }).call(this);
