@@ -65,6 +65,6 @@
   });
 
 
-  server.listen(8888);
+  server.listen();
 
 }).call(this);
