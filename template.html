@@ -14,7 +14,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 	var canvas = $('#imageView');
 	canvas = canvas[0];
 	var context = canvas.getContext('2d');
-	var socket = io.connect('http://cold-dusk-8817.herokuapp.com:3000');
+	io.configure(function () { 
+	  io.set("transports", ["xhr-polling"]); 
+	  io.set("polling duration", 10); 
+	});
+	var socket = io.connect('http://cold-dusk-8817.herokuapp.com');
 	socket.on('connect', function() {
 	  console.log('socket connected');
 	});
