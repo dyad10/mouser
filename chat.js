@@ -65,6 +65,8 @@
   });
 
 
-  server.listen();
+  var port = process.env.PORT || 8888;
+
+  server.listen(port);
 
 }).call(this);
